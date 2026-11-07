@@ -1,8 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Code2, Calendar, Users, Mail, Info, Home, MessageSquare } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Code2, Calendar, Users, Mail, Info, Home, MessageSquare, LogOut, UserCheck } from 'lucide-react';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const { user, signOut, isAtuEmail } = useAuth();
 
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
@@ -50,9 +52,37 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               })}
             </div>
             
-            <Link to="/contact" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-sm transition-all shadow-md shadow-emerald-950/30">
-              Join Us
-            </Link>
+            {/* Dynamic Auth Status */}
+            <div className="flex items-center gap-3">
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl animate-fade-in">
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="max-w-[150px] truncate">{user.displayName || user.email}</span>
+                    {isAtuEmail && (
+                      <span className="ml-1 px-1.5 py-0.5 bg-emerald-950 text-emerald-400 text-[10px] rounded border border-emerald-800 font-bold">
+                        Member
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => signOut()}
+                    className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white font-semibold px-3.5 py-2 rounded-xl text-sm transition-all flex items-center gap-1.5"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4 text-emerald-400" />
+                    <span className="hidden sm:inline">Sign Out</span>
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  to="/login" 
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-sm transition-all shadow-md shadow-emerald-950/30"
+                >
+                  Join Us
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </nav>
